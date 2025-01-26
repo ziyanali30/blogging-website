@@ -1,0 +1,35 @@
+name: deploy
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  BUILD:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: install node
+        uses: actions/setup-node@v4
+      - name: install parcel
+        run: npm install --save-dev parcel
+      - name: checkbuild
+        run: npx parcel build src/**/*.html src/**/*.css --dist-dir './dev' --public-url ./
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dev"
+          name: "develop-artifact"
+  DEPLOY:
+    runs-on: ubuntu-latest
+    needs: BUILD
+    environment: "development-env"
+    permissions:
+      pages: write 
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: "develop-artifact"
+          token: ${{github.token}}     
