@@ -1,0 +1,32 @@
+name : PR Validation
+on:
+  pull_request:
+    branches:
+      - develop
+jobs:
+  LINTING:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: install node
+        uses: actions/setup-node@v4
+      - name: install htmlhint
+        run: npm install --save-dev htmlhint
+      - name: install stylelint
+        run:  npm install --save-dev stylelint
+      - name: check html
+        run:  npx htmlhint "**/*.html"
+      - name: check css
+        run: npx stylelint "**/*.css"
+  BUILD_NO_DEPLOY:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: install node
+        uses: actions/setup-node@v4
+      - name: install parcel
+        run: npm install --save-dev parcel
+      - name: checkbuild
+        run: npx parcel build src/**/*.html src/**/*.css --dist-dir './dev' --public-url ./
